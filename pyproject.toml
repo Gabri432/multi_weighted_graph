@@ -1,0 +1,14 @@
+[project]
+name = "multi_weighted_graph"
+version = "0.1.0"
+description = "A data type representing a graph in which edges can be associated to more weights."
+readme = "README.md"
+requires-python = ">=3.14.3"
+license = {text = "Apache License"}
+authors = [
+    {name = "Gabriele Gatti", email = "gabrielegatti432@gmail.com"}
+]
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
