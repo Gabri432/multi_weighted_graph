@@ -6,9 +6,24 @@ readme = "README.md"
 requires-python = ">=3.14.3"
 license = {text = "Apache License"}
 authors = [
-    {name = "Gabriele Gatti", email = "gabrielegatti432@gmail.com"}
+    {name = "Gabriele Gatti", email = "gabrielegatti432@gmail.com"},
 ]
-dependencies = []
+maintainers = [
+  { name="Gabriele Gatti", email="gabrielegatti432@gmail.com" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: Apache License",
+    "Programming Language :: Python :: 3.14",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering :: Algorithms and Data Structures"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1.1",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
