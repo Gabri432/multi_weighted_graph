@@ -57,9 +57,9 @@ class MultiWeightedGraph:
             elif condition2:
                 self.edges.remove(edge)
 
-    def minimal_spanning_tree(self, weights_to_select: int) -> list:
+    def minimal_spanning_tree(self, weights_to_select: int) -> list[MultiWeightedGraph._GraphEdge]:
         ordered_edges = sorted(self.edges, key=lambda edge:(edge.weights[weights_to_select]))
-        current_tree = []
+        current_tree: list[MultiWeightedGraph._GraphEdge] = []
         partition: list[MultiWeightedGraph._Partition] = []
         for edge in ordered_edges:
             part_a = self._Partition(edge.vertex_a)
