@@ -20,8 +20,14 @@ class MultiWeightedGraph:
         def __find__(self, name: str) -> bool:
             return self.elements.__contains__(name)
 
+        def __str__(self) -> str:
+            return "{"+ self.elements.__str__() +"}"
+                    
+        def __repr__(self) -> str:
+            return f"Partition(name={self.name}, elements={self.elements})"
+
         def __union__(self, elements: set[str], new_name: str) -> None:
-            self.elements.union(elements)
+            self.elements = self.elements.union(elements)
             self.name = new_name
 
         def __eq__(self, value: object) -> bool:
@@ -68,8 +74,24 @@ class MultiWeightedGraph:
                 partition.append(part_a)
             if partition.__contains__(part_b) == False:
                 partition.append(part_b)
-            if not (part_a.__find__(part_b.name) or part_b.__find__(part_a.name)):
-                part_a.__union__(part_b.elements, part_a.name)
-                partition.remove(part_b)
+            if not self.__same_partition__(partition, edge.vertex_a, edge.vertex_b):
+                partition_of_a = self.__find_partition__(partition, edge.vertex_a)
+                partition_of_b = self.__find_partition__(partition, edge.vertex_b)
+                partition.remove(partition_of_a)
+                partition.remove(partition_of_b)
+                partition_of_a.__union__(partition_of_b.elements, part_a.name)
+                partition.append(partition_of_a)
                 current_tree.append(edge)
         return current_tree
+
+    def __same_partition__(self, partition: list[MultiWeightedGraph._Partition], vertex_a: str, vertex_b) -> bool:
+        for sub_partition in partition:
+            if sub_partition.__find__(vertex_a) and sub_partition.__find__(vertex_b):
+                return True
+        return False
+
+    def __find_partition__(self, partition: list[MultiWeightedGraph._Partition], name: str) -> MultiWeightedGraph._Partition:
+        for sub_partition in partition:
+            if sub_partition.name == name or sub_partition.elements.__contains__(name):
+                return sub_partition
+        return MultiWeightedGraph._Partition("")
