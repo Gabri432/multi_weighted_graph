@@ -43,6 +43,7 @@ class MultiWeightedGraph:
         self.name = name
         self.weights_per_edge = number_of_weights_per_edge
         self.edges: list[MultiWeightedGraph._GraphEdge] = []
+        self.vertices: set[str] = set()
 
     def __str__(self) -> str:
         return self.name
@@ -53,6 +54,8 @@ class MultiWeightedGraph:
     def add_edge(self, first_vertice_name: str, second_vertice_name: str, weights: list[float]) -> None:
         edge = self._GraphEdge(first_vertice_name, second_vertice_name, weights)
         self.edges.append(edge)
+        self.vertices.add(first_vertice_name)
+        self.vertices.add(second_vertice_name)
 
     def remove_edge(self, first_vertice_name: str, second_vertice_name: str) -> None:
         for edge in self.edges:
@@ -64,6 +67,7 @@ class MultiWeightedGraph:
                 self.edges.remove(edge)
 
     def minimal_spanning_tree(self, weights_to_select: int) -> list[MultiWeightedGraph._GraphEdge]:
+        '''Calculate the minimal spanning tree based on the weight selected for each edge.'''
         ordered_edges = sorted(self.edges, key=lambda edge:(edge.weights[weights_to_select]))
         current_tree: list[MultiWeightedGraph._GraphEdge] = []
         partition: list[MultiWeightedGraph._Partition] = []
@@ -95,3 +99,23 @@ class MultiWeightedGraph:
             if sub_partition.name == name or sub_partition.elements.__contains__(name):
                 return sub_partition
         return MultiWeightedGraph._Partition("")
+
+    def matrix_of_distances(self, weight_to_select: int = 0) -> list[list[float]]:
+        '''Calculates the matrix of distances between vertices based on the weight selected for each edge.'''
+        n = len(self.vertices)
+        v_to_idx = {v: i for i, v in enumerate(self.vertices)}
+        inf = float("inf")
+        dist = [[inf] * n for _ in range(n)]
+        for i in range(n):
+            dist[i][i] = 0
+
+        for edge in self.edges:
+            dist[v_to_idx[edge.vertex_a]][v_to_idx[edge.vertex_b]] = edge.weights[weight_to_select]
+            dist[v_to_idx[edge.vertex_b]][v_to_idx[edge.vertex_a]] = edge.weights[weight_to_select]
+
+        for k in range(n):
+            for i in range(n):
+                for j in range(n):
+                    if dist[i][j] > dist[i][k] + dist[k][j]:
+                        dist[i][j] = dist[i][k] + dist[k][j]
+        return dist
