@@ -40,3 +40,18 @@ def test_minimal_spanning_tree_2():
     for edge in spanning_tree_second_weight:
             total_weight_2 += edge.weights[1]
     assert total_weight_1 == total_weight_2
+
+def test_matrix_of_distances():
+    my_graph = MultiWeightedGraph("", 2)
+    my_graph.add_edge("a", "b", [4, 2])
+    my_graph.add_edge("b", "c", [3, 2])
+    my_graph.add_edge("c", "d", [2, 2])
+    my_graph.add_edge("a", "d", [1, 2])
+    v_to_idx = {v: i for i, v in enumerate(my_graph.vertices)}
+    matrix_0 = my_graph.matrix_of_distances(0)
+    matrix_1 = my_graph.matrix_of_distances(1)
+    b = v_to_idx.get("b")
+    d = v_to_idx.get("d")
+    if b != None and d != None:
+        assert matrix_0[b][d] == 5
+        assert matrix_1[d][b] == 4
