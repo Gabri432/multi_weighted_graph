@@ -55,3 +55,25 @@ def test_matrix_of_distances():
     if b != None and d != None:
         assert matrix_0[b][d] == 5
         assert matrix_1[d][b] == 4
+
+def test_matrix_of_distances_from_source():
+    my_graph = MultiWeightedGraph("", 2)
+    my_graph.add_edge("a", "b", [4, 2])
+    my_graph.add_edge("b", "c", [3, 2])
+    my_graph.add_edge("c", "d", [2, 2])
+    my_graph.add_edge("a", "d", [1, 2])
+    v_to_idx = {v: i for i, v in enumerate(my_graph.vertices)}
+    vector_a = my_graph.matrix_of_distances_from_source("a", 0)
+    vector_c = my_graph.matrix_of_distances_from_source("c", 1)
+    vector_b = my_graph.matrix_of_distances_from_source("b", 0)
+    vector_d = my_graph.matrix_of_distances_from_source("d", 0)
+    a = v_to_idx.get("a")
+    b = v_to_idx.get("b")
+    c = v_to_idx.get("c")
+    d = v_to_idx.get("d")
+    print(v_to_idx)
+    if a != None and c != None and b != None and d != None:
+        assert vector_a[c] == 3
+        assert vector_c[a] == 4
+        assert vector_b[d] == 5
+        assert vector_d[b] == 5
