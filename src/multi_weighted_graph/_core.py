@@ -38,12 +38,34 @@ class MultiWeightedGraph:
 
         def __hash__(self) -> int:
             return hash(self.name)
+
+    class __Vertex__:
+        def __init__(self, vertex: str, distance_from_source: float) -> None:
+            self.vertex = vertex
+            self.distance_from_source = distance_from_source
+
+        def __str__(self) -> str:
+            return "{"+ self.vertex +" : " + str(self.distance_from_source)+"}"
+                    
+        def __repr__(self) -> str:
+            return f"Vertex(name={self.vertex}, distance_from_source={self.distance_from_source})"
+
+    class __VertexNeighbours__:
+        def __init__(self, vertex: str, neighbours: list[MultiWeightedGraph.__Vertex__]):
+            self.vertex = vertex
+            self.neighbourhood = neighbours
+
+        def __str__(self) -> str:
+            return "{"+ self.vertex +" : " + str(self.neighbourhood)+"}"
+                    
+        def __repr__(self) -> str:
+            return f"Vertex(name={self.vertex}, neighbours={self.neighbourhood})"
     
     def __init__(self, name: str = "My new multi-weighted graph", number_of_weights_per_edge: int = 1) -> None:
         self.name = name
         self.weights_per_edge = number_of_weights_per_edge
         self.edges: list[MultiWeightedGraph._GraphEdge] = []
-        self.vertices: set[str] = set()
+        self.vertices: list[str] = []
 
     def __str__(self) -> str:
         return self.name
@@ -54,8 +76,10 @@ class MultiWeightedGraph:
     def add_edge(self, first_vertice_name: str, second_vertice_name: str, weights: list[float]) -> None:
         edge = self._GraphEdge(first_vertice_name, second_vertice_name, weights)
         self.edges.append(edge)
-        self.vertices.add(first_vertice_name)
-        self.vertices.add(second_vertice_name)
+        if (self.vertices.__contains__(first_vertice_name) == False): 
+            self.vertices.append(first_vertice_name)
+        if (self.vertices.__contains__(second_vertice_name) == False):
+            self.vertices.append(second_vertice_name)
 
     def remove_edge(self, first_vertice_name: str, second_vertice_name: str) -> None:
         for edge in self.edges:
@@ -119,3 +143,79 @@ class MultiWeightedGraph:
                     if dist[i][j] > dist[i][k] + dist[k][j]:
                         dist[i][j] = dist[i][k] + dist[k][j]
         return dist
+
+    def matrix_of_distances_from_source(self, source: str, weight_to_select: int = 0) -> list[float]:
+        '''Calculates the matrix of distances between vertices from a specific vertex (source) based on the weight selected for each edge.'''
+        graph = self.__create_adjacency_lists__(weight_to_select)
+        n = len(self.vertices)
+        explored = [False for _ in range(n)]
+        dist_from_source = self.__initialize_distance_vector__(source, weight_to_select)
+        v_to_idx = {v: i for i, v in enumerate(self.vertices)}
+        idx_to_v = {i: v for i, v in enumerate(self.vertices)}
+        a = (v_to_idx.get(source))
+        if a != None:
+            explored[a] = True
+        for _, v in enumerate(self.vertices):
+            if v != source:
+                index_min = self.__get_min_distance_vertex_index__(explored, dist_from_source)
+                adjacent_list: list[MultiWeightedGraph.__Vertex__] = []
+                vertex_of_min_distance = idx_to_v.get(index_min)
+                if vertex_of_min_distance != None:
+                    adjacent_list = self.__get_specific_adjacent_list__(vertex_of_min_distance, graph)
+                for vert in adjacent_list:
+                    index_of_adj_vertex = v_to_idx.get(vert.vertex)
+                    if index_of_adj_vertex != None and explored[index_of_adj_vertex]:
+                        continue
+                    if index_of_adj_vertex != None and dist_from_source[index_of_adj_vertex] > dist_from_source[index_min] + vert.distance_from_source:
+                        dist_from_source[index_of_adj_vertex] = dist_from_source[index_min] + vert.distance_from_source
+                explored[index_min] = True
+        return dist_from_source
+
+    def __create_adjacency_lists__(self, weight_to_select: int = 0) -> list[MultiWeightedGraph.__VertexNeighbours__]:
+        main_list: list[MultiWeightedGraph.__VertexNeighbours__] = []
+        for vertex in self.vertices:
+            adj: list[MultiWeightedGraph.__Vertex__] = []
+            for edge in self.edges:
+                if edge.vertex_a == vertex:
+                    new_vertex = MultiWeightedGraph.__Vertex__(edge.vertex_b, edge.weights[weight_to_select])
+                    adj.append(new_vertex)
+                elif edge.vertex_b == vertex:
+                    new_vertex = MultiWeightedGraph.__Vertex__(edge.vertex_a, edge.weights[weight_to_select])
+                    adj.append(new_vertex)
+            vertex_neighbourhood = MultiWeightedGraph.__VertexNeighbours__(vertex, adj)
+            main_list.append(vertex_neighbourhood)
+        return main_list
+    
+    def __get_specific_adjacent_list__(self, vertex: str, graph: list[MultiWeightedGraph.__VertexNeighbours__]) -> list[MultiWeightedGraph.__Vertex__]:
+        for v_ne in graph:
+            if v_ne.vertex == vertex:
+                return v_ne.neighbourhood
+        return []
+
+    def __initialize_distance_vector__(self, vertex: str, weight_to_select: int = 0) -> list[float]:
+        n = len(self.vertices)
+        v_to_idx = {v: i for i, v in enumerate(self.vertices)}
+        inf = float("inf")
+        dist_from_source = [inf * n for _ in range(n)]
+        for i in range(n):
+            if i == v_to_idx.get(vertex):
+                dist_from_source[i] = 0
+            else:
+                dist_from_source[i] = inf
+        for edge in self.edges:
+            a = v_to_idx.get(edge.vertex_a)
+            b = v_to_idx.get(edge.vertex_b)
+            if edge.vertex_a == vertex and b != None:
+                dist_from_source[b] = edge.weights[weight_to_select]
+            elif edge.vertex_b == vertex and a != None:
+                dist_from_source[a] = edge.weights[weight_to_select]
+        return dist_from_source
+
+    def __get_min_distance_vertex_index__(self, explored_vertices: list, distances_from_source: list[float]) -> int:
+        min_dist = float("inf")
+        index = 0
+        for i, dist in enumerate(distances_from_source):
+            if dist < min_dist and explored_vertices[i] == False:
+                min_dist = dist
+                index = i
+        return index
