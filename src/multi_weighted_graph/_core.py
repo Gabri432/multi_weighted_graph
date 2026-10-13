@@ -1,6 +1,6 @@
 class MultiWeightedGraph:
     '''An instance of class MultiWeightedGraph represents a graph in which each edge is associated to one or more weights.'''
-    class _GraphEdge:
+    class GraphEdge:
         def __init__(self, vertex_a: str, vertex_b: str, weights: list[float]) -> None:
             self.vertex_a = vertex_a
             self.vertex_b = vertex_b
@@ -12,7 +12,7 @@ class MultiWeightedGraph:
         def __repr__(self) -> str:
             return f"GraphEdge({self.vertex_a!r}, {self.vertex_b!r}, {self.weights!r})"
 
-    class _Partition:
+    class __Partition__:
         def __init__(self, name: str) -> None:
             self.name = name
             self.elements = set(name)
@@ -31,7 +31,7 @@ class MultiWeightedGraph:
             self.name = new_name
 
         def __eq__(self, value: object) -> bool:
-            if not isinstance(value, MultiWeightedGraph._Partition):
+            if not isinstance(value, MultiWeightedGraph.__Partition__):
                 return False
 
             return value.name == self.name
@@ -64,7 +64,7 @@ class MultiWeightedGraph:
     def __init__(self, name: str = "My new multi-weighted graph", number_of_weights_per_edge: int = 1) -> None:
         self.name = name
         self.weights_per_edge = number_of_weights_per_edge
-        self.edges: list[MultiWeightedGraph._GraphEdge] = []
+        self.edges: list[MultiWeightedGraph.GraphEdge] = []
         self.vertices: list[str] = []
 
     def __str__(self) -> str:
@@ -74,7 +74,7 @@ class MultiWeightedGraph:
         return f"MultiWeightedGraph({self.name!r}, {self.weights_per_edge})"
 
     def add_edge(self, first_vertice_name: str, second_vertice_name: str, weights: list[float]) -> None:
-        edge = self._GraphEdge(first_vertice_name, second_vertice_name, weights)
+        edge = self.GraphEdge(first_vertice_name, second_vertice_name, weights)
         self.edges.append(edge)
         if (self.vertices.__contains__(first_vertice_name) == False): 
             self.vertices.append(first_vertice_name)
@@ -90,14 +90,14 @@ class MultiWeightedGraph:
             elif condition2:
                 self.edges.remove(edge)
 
-    def minimal_spanning_tree(self, weights_to_select: int) -> list[MultiWeightedGraph._GraphEdge]:
+    def minimal_spanning_tree(self, weights_to_select: int) -> list[MultiWeightedGraph.GraphEdge]:
         '''Calculate the minimal spanning tree based on the weight selected for each edge.'''
         ordered_edges = sorted(self.edges, key=lambda edge:(edge.weights[weights_to_select]))
-        current_tree: list[MultiWeightedGraph._GraphEdge] = []
-        partition: list[MultiWeightedGraph._Partition] = []
+        current_tree: list[MultiWeightedGraph.GraphEdge] = []
+        partition: list[MultiWeightedGraph.__Partition__] = []
         for edge in ordered_edges:
-            part_a = self._Partition(edge.vertex_a)
-            part_b = self._Partition(edge.vertex_b)
+            part_a = self.__Partition__(edge.vertex_a)
+            part_b = self.__Partition__(edge.vertex_b)
             if partition.__contains__(part_a) == False:
                 partition.append(part_a)
             if partition.__contains__(part_b) == False:
@@ -112,17 +112,17 @@ class MultiWeightedGraph:
                 current_tree.append(edge)
         return current_tree
 
-    def __same_partition__(self, partition: list[MultiWeightedGraph._Partition], vertex_a: str, vertex_b) -> bool:
+    def __same_partition__(self, partition: list[MultiWeightedGraph.__Partition__], vertex_a: str, vertex_b) -> bool:
         for sub_partition in partition:
             if sub_partition.__find__(vertex_a) and sub_partition.__find__(vertex_b):
                 return True
         return False
 
-    def __find_partition__(self, partition: list[MultiWeightedGraph._Partition], name: str) -> MultiWeightedGraph._Partition:
+    def __find_partition__(self, partition: list[MultiWeightedGraph.__Partition__], name: str) -> MultiWeightedGraph.__Partition__:
         for sub_partition in partition:
             if sub_partition.name == name or sub_partition.elements.__contains__(name):
                 return sub_partition
-        return MultiWeightedGraph._Partition("")
+        return MultiWeightedGraph.__Partition__("")
 
     def matrix_of_distances(self, weight_to_select: int = 0) -> list[list[float]]:
         '''Calculates the matrix of distances between vertices based on the weight selected for each edge.'''
