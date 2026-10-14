@@ -1,6 +1,10 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
 [project]
 name = "multi_weighted_graph"
-version = "0.2.0"
+version = "0.3.0"
 description = "A data type representing a graph in which edges can be associated to more weights."
 readme = "README.md"
 requires-python = ">=3.14.3"
@@ -20,10 +24,17 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Algorithms and Data Structures"
 ]
 
+[project.urls]
+Homepage = "https://github.com/Gabri432/multi_weighted_graph"
+Issues = "https://github.com/Gabri432/multi_weighted_graph/issues"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=9.1.1",
 ]
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+where = ["src/multi_weighted_graph"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
