@@ -73,18 +73,20 @@ class MultiWeightedGraph:
     def __repr__(self) -> str:
         return f"MultiWeightedGraph({self.name!r}, {self.weights_per_edge})"
 
-    def add_edge(self, first_vertice_name: str, second_vertice_name: str, weights: list[float]) -> None:
-        edge = self.GraphEdge(first_vertice_name, second_vertice_name, weights)
+    def add_edge(self, first_vertex_name: str, second_vertex_name: str, weights: list[float]) -> None:
+        '''Adds an edge to the graph by specifying the name of the vertices, as well as a list of weights to associate to such edge'''
+        edge = self.GraphEdge(first_vertex_name, second_vertex_name, weights)
         self.edges.append(edge)
-        if (self.vertices.__contains__(first_vertice_name) == False): 
-            self.vertices.append(first_vertice_name)
-        if (self.vertices.__contains__(second_vertice_name) == False):
-            self.vertices.append(second_vertice_name)
+        if (self.vertices.__contains__(first_vertex_name) == False): 
+            self.vertices.append(first_vertex_name)
+        if (self.vertices.__contains__(second_vertex_name) == False):
+            self.vertices.append(second_vertex_name)
 
-    def remove_edge(self, first_vertice_name: str, second_vertice_name: str) -> None:
+    def remove_edge(self, first_vertex_name: str, second_vertex_name: str) -> None:
+        '''Removes an edge from the graph by specifying its two vertices.'''
         for edge in self.edges:
-            condition1 = edge.vertex_a == first_vertice_name and edge.vertex_b == second_vertice_name
-            condition2 = edge.vertex_a == second_vertice_name and edge.vertex_b == first_vertice_name
+            condition1 = edge.vertex_a == first_vertex_name and edge.vertex_b == second_vertex_name
+            condition2 = edge.vertex_a == second_vertex_name and edge.vertex_b == first_vertex_name
             if condition1:
                 self.edges.remove(edge)
             elif condition2:
