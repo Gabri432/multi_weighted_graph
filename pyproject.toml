@@ -16,12 +16,11 @@ maintainers = [
   { name="Gabriele Gatti", email="gabrielegatti432@gmail.com" },
 ]
 classifiers = [
-    "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
-    "License :: OSI Approved :: Apache License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3.14",
     "Intended Audience :: Education",
-    "Topic :: Scientific/Engineering :: Algorithms and Data Structures"
+    "Topic :: Education"
 ]
 
 [project.urls]
