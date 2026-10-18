@@ -77,3 +77,49 @@ def test_matrix_of_distances_from_source():
         assert vector_c[a] == 4
         assert vector_b[d] == 5
         assert vector_d[b] == 5
+
+def test_add_vertices():
+    my_graph = MultiWeightedGraph("", 1)
+    my_graph.add_vertex("B")
+    my_graph.add_vertex("F")
+    my_graph.add_vertex("Z")
+    my_graph.add_vertex("A")
+    my_graph.add_vertex("A")
+    vertices = my_graph.vertices
+    assert vertices == ["A", "B", "F", "Z"]
+
+def test_remove_vertices_1():
+    my_graph = MultiWeightedGraph("", 1)
+    my_graph.add_vertex("B")
+    my_graph.add_vertex("F")
+    my_graph.add_vertex("Z")
+    my_graph.add_vertex("A")
+    my_graph.remove_vertex("B")
+    vertices = my_graph.vertices
+    assert vertices == ["A", "F", "Z"]
+
+def test_remove_vertices_2():
+    my_graph = MultiWeightedGraph("", 1)
+    my_graph.add_edge("A", "B", [1])
+    my_graph.add_edge("C", "B", [1])
+    my_graph.add_edge("A", "F", [1])
+    my_graph.add_edge("C", "D", [1])
+    my_graph.add_edge("E", "F", [1])
+    my_graph.remove_vertex("B")
+    vertices = my_graph.vertices
+    edges = my_graph.edges
+    assert vertices == ["A", "C", "D", "E", "F"]
+    assert edges.__len__() == 4
+
+def test_order_vertices():
+    my_graph = MultiWeightedGraph("", 1)
+    my_graph.add_edge("A", "B", [1])
+    my_graph.add_edge("C", "B", [1])
+    my_graph.add_edge("A", "F", [1])
+    my_graph.add_edge("C", "D", [1])
+    my_graph.add_edge("E", "F", [1])
+    vertices = my_graph.vertices
+    assert vertices == ["A", "B", "C", "D", "E", "F"]
+    my_graph.order_vertices(False)
+    vertices = my_graph.vertices
+    assert vertices == ["F", "E", "D", "C", "B", "A"]

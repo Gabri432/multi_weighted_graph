@@ -66,6 +66,7 @@ class MultiWeightedGraph:
         self.weights_per_edge = number_of_weights_per_edge
         self.edges: list[MultiWeightedGraph.GraphEdge] = []
         self.vertices: list[str] = []
+        self.__alphabetical_order__ = True
 
     def __str__(self) -> str:
         return self.name
@@ -74,16 +75,19 @@ class MultiWeightedGraph:
         return f"MultiWeightedGraph({self.name!r}, {self.weights_per_edge})"
 
     def add_edge(self, first_vertex_name: str, second_vertex_name: str, weights: list[float]) -> None:
-        '''Adds an edge to the graph by specifying the name of the vertices, as well as a list of weights to associate to such edge'''
+        '''Adds an edge to the graph by specifying the name of the vertices, as well as a list of weights to associate to such edge.
+        \n\n It also creates the two vertices if they were not specified before.'''
         edge = self.GraphEdge(first_vertex_name, second_vertex_name, weights)
         self.edges.append(edge)
         if (self.vertices.__contains__(first_vertex_name) == False): 
             self.vertices.append(first_vertex_name)
         if (self.vertices.__contains__(second_vertex_name) == False):
             self.vertices.append(second_vertex_name)
+        self.order_vertices(self.__alphabetical_order__)
 
     def remove_edge(self, first_vertex_name: str, second_vertex_name: str) -> None:
-        '''Removes an edge from the graph by specifying its two vertices.'''
+        '''Removes an edge from the graph by specifying its two vertices.
+        \n\n Removing an edge does not eliminate the vertices associated with.'''
         for edge in self.edges:
             condition1 = edge.vertex_a == first_vertex_name and edge.vertex_b == second_vertex_name
             condition2 = edge.vertex_a == second_vertex_name and edge.vertex_b == first_vertex_name
@@ -91,6 +95,29 @@ class MultiWeightedGraph:
                 self.edges.remove(edge)
             elif condition2:
                 self.edges.remove(edge)
+
+    def add_vertex(self, name: str) -> None:
+        '''Adds a new vertex to the graph.'''
+        if (self.vertices.__contains__(name) == False): 
+            self.vertices.append(name)
+            self.order_vertices(self.__alphabetical_order__)
+
+    def remove_vertex(self, name: str) -> None:
+        '''Removes a vertex from the graph, as well as <b>ALL</b> its associated edges. 
+        \n\n For example, once vertex A is removed, then edges of type (A, x) and (x, A) will also be removed from the graph.'''
+        if self.vertices.__contains__(name): 
+            for edge in self.edges:
+                if edge.vertex_a == name or edge.vertex_b == name:
+                    self.edges.remove(edge)
+            self.vertices.remove(name)
+            self.order_vertices(self.__alphabetical_order__)
+
+    def order_vertices(self, alphabetical_order: bool = True) -> None:
+        '''Order the vertices alphabetically by default when True. When False it applies the reverse alphabetical order.'''
+        self.vertices = sorted(self.vertices)
+        if alphabetical_order == False:
+            self.vertices = sorted(self.vertices, reverse=True)
+        self.__alphabetical_order__ = alphabetical_order
 
     def minimal_spanning_tree(self, weights_to_select: int) -> list[MultiWeightedGraph.GraphEdge]:
         '''Calculate the minimal spanning tree based on the weight selected for each edge.'''
