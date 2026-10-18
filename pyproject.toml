@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "multi_weighted_graph"
-version = "0.3.0"
+version = "0.4.0"
 description = "A data type representing a graph in which edges can be associated to more weights."
 readme = "README.md"
 requires-python = ">=3.14.3"
